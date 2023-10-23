@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+    <TestFlag>true</TestFlag>
+    <User>
+        <Username>Testuser</Username>
+        <Domain>DomainName</Domain>
+    </User>
+    <VPNConnections>
+        <Connection>
+            <Name>VPN1</Name>
+            <IP>192.168.1.1</IP>
+        </Connection>
+        <Connection>
+            <Name>VPN2</Name>
+            <IP>192.168.1.2</IP>
+        </Connection>
+    </VPNConnections>
+    <NetworkPrinters>
+        <Printer>
+            <Name>Drucker1</Name>
+            <IP>192.168.1.1</IP>
+            <Location>Büro1</Location>
+            <PortName>Drucker_Portname</PortName>
+            <DriverName>Drucker_Treibername</DriverName>
+            <PrinterName>Name_des_Druckers</PrinterName>
+            <DriverPath>Pfad_zum_Treiberordner</DriverPath>
+            <PortNumber>9100</PortNumber>
+        </Printer>
+        <Printer>
+            <Name>Drucker2</Name>
+            <IP>192.168.2.2</IP>
+            <Location>Büro2</Location>
+            <PortName>Drucker_Portname</PortName>
+            <DriverName>Drucker_Treibername</DriverName>
+            <PrinterName>Name_des_Druckers</PrinterName>
+            <DriverPath>Pfad_zum_Treiberordner</DriverPath>
+            <PortNumber>9100</PortNumber>
+        </Printer>
+    </NetworkPrinters>
+</Root>
