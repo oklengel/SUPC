@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Root>
     <TestFlag>true</TestFlag>
+    <AdminMail>Mail@Admin</AdminMail>
+
+    <enableBitLocker>true</enableBitLocker>
     <User>
         <Username>Testuser</Username>
         <Domain>DomainName</Domain>
+        <TargetGroup>Administratoren</TargetGroup>
     </User>
     <VPNConnections>
         <Connection>

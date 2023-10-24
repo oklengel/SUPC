@@ -2,7 +2,31 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$xmlFilePath
 )
+#
+# Helpers:
+#
+function AddUserToGroup($username, $domain, $targetGroup) {
+    # Active Directory-Modul importieren
+    Import-Module ActiveDirectory
 
+    # Prüfen, ob der Nutzer im Active Directory existiert
+    $user = Get-ADUser -Filter {SamAccountName -eq $username} -Server $domain
+    if ($user -eq $null) {
+        Write-Host "Nutzer '$username' existiert nicht im Active Directory."
+        return
+    }
+
+    # Den Nutzer zur angegebenen Gruppe hinzufügen
+    try {
+        Add-ADGroupMember -Identity $targetGroup -Members $user -ErrorAction Stop
+        Write-Host "Nutzer '$username' wurde zur Gruppe '$targetGroup' hinzugefügt."
+    } catch {
+        Write-Host "Fehler: Der Nutzer '$username' konnte nicht zur Gruppe '$targetGroup' hinzugefügt werden. $($Error[0].Exception.Message)"
+    }
+}
+
+#
+# end of helpers
 # XML-Datei laden
 [xml]$xml = Get-Content $xmlFilePath
 
@@ -11,6 +35,13 @@ param (
 $username = $xml.Root.User.Username
 $domain = $xml.Root.User.Domain
 #Write-Host "Benutzername: $username, Domäne: $domain"
+$adminEmail = $xml.Root.AdminMail
+
+# Prüfen, ob das Skript als Administrator ausgeführt wird
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Fehler: Das Skript muss als Administrator ausgeführt werden, um BitLocker zu aktivieren und E-Mails zu senden."
+    exit
+}
 Write-Host "Let's setup a pc for $username @ $domain."
 #Testflag? 
 $testFlag = $xml.Root.TestFlag
@@ -31,7 +62,13 @@ if ($xml.Root.VPNConnections.Connection.Count -gt 0){
 }else{
     Write-Host "🚨 Warnung: Keine VPNs gefunden..."
 }
-
+# add user from AD
+Write-Host "🚀 Nutzer von AD hinzufügen..."
+if ($testFlag -eq "true") {
+    Write-Host "Test: Nutzer  $($xml.Root.User.Username) @ $($xml.Root.User.Domain)  für $($xml.Root.User.TargetGroup) gefunden"
+}else{
+    AddUserToGroup $xml.Root.User.Username $xml.Root.User.Domain $xml.Root.User.TargetGroup
+}
 # Netzwerkdrucker hinzufügen
 Write-Host "🚀 Drucker hinzufügen..."
 if ($xml.Root.NetworkPrinters.Printer.Count -gt 0) {
@@ -132,3 +169,4 @@ if ($xml.Root.LocalUsers.User.Count -gt 0) {
 #   - Bitlocker 
 
 Write-Host "Das Skript wurde erfolgreich ausgeführt."
+Read-Host -Prompt "Press any key to continue"
