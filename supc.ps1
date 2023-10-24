@@ -86,13 +86,49 @@ if ($xml.Root.NetworkPrinters.Printer.Count -gt 0) {
     Write-Host "Warnung: Keine Drucker gefunden."
 }
 
-# Benutzer aus dem Active Directory ziehen und als lokalen Admin anlegen
+# Lokale Benutzer hinzufügen
+Write-Host "🚀 Lokale Benutzer hinzufügen..."
+if ($xml.Root.LocalUsers.User.Count -gt 0) {
+    foreach ($localUser in $xml.Root.LocalUsers.User) {
+        Write-Host "test"
+        $localUsername = $localUser.Username
+        $localUserPassword = $localUser.PWD
+        $isAdmin = [System.Convert]::ToBoolean($localUser.IsAdmin)
+        $pwdChangeRequired = [System.Convert]::ToBoolean($localUser.PWDchangeRequired)
 
-#$securePassword = ConvertTo-SecureString "Passwort" -AsPlainText -Force
-#New-LocalUser -Name $username -Password $securePassword -FullName $username -Description "Neuer lokaler Administrator"
-#Add-LocalGroupMember -Group "Administratoren" -Member $username
+        Write-Host "Lokaler Benutzername: $localUsername"
+        Write-Host "Ist Administrator: $isAdmin"
+        Write-Host "Kennwortänderung erforderlich: $pwdChangeRequired"
 
-# Weitere Aktionen für den Benutzer ausführen
-# Füge hier weitere Aktionen hinzu, die du für den Benutzer ausführen möchtest
+        if ($testFlag -eq "true") {
+            Write-Host "Test: Hinzufügen des lokalen Benutzers: $localUsername"
+            # Hier würdest du den tatsächlichen Code zum Erstellen des lokalen Benutzers hinzufügen
+            # ...
+        } else {
+            # Hier fügst du den tatsächlichen Code zum Erstellen des lokalen Benutzers hinzu
+            # Zum Beispiel mit dem Befehl "New-LocalUser" in PowerShell
+           New-LocalUser -Name $localUsername -Password $localUserPassword -AccountNeverExpires:$pwdChangeRequired -Description "Lokaler Benutzer"
+            
+            if ($isAdmin) {
+                # Wenn der Benutzer ein Administrator sein soll, füge ihn zur Administratorgruppe hinzu
+                Add-LocalGroupMember -Group "Administrators" -Member $localUsername
+            }
+
+            Write-Host "Lokaler Benutzer $localUsername wurde erstellt."
+
+            if ($pwdChangeRequired) {
+                # Setze das Kennwortänderungserfordernis
+                Set-LocalUser -Name $localUsername -PasswordNeverExpires:$false
+            }
+        }
+    }
+} else {
+    Write-Host "🚨 Warnung: Keine lokalen Benutzer gefunden."
+}
+
+#TBD/Wishlist/Roadmap:
+#   - Add VPN support
+#   - User from AD
+#   - Bitlocker 
 
 Write-Host "Das Skript wurde erfolgreich ausgeführt."

@@ -37,4 +37,18 @@
             <PortNumber>9100</PortNumber>
         </Printer>
     </NetworkPrinters>
+    <LocalUsers>
+        <User>
+            <Username>TestLocalUser1</Username>
+            <PWD>TestPWD</PWD>
+            <IsAdmin>true</IsAdmin>
+            <PWDchangeRequired>true</PWDchangeRequired>
+        </User>
+        <User>
+            <Username>TestLocalUser2</Username>
+            <PWD>TestPWD</PWD>
+            <IsAdmin>false</IsAdmin>
+            <PWDchangeRequired>true</PWDchangeRequired>
+        </User>
+    </LocalUsers>
 </Root>
